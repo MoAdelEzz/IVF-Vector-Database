@@ -141,7 +141,7 @@ class VecDB:
         else:
             scores = best_centroids[:60]
         del best_centroids
-        top_k_results = []
+        top_k_results = SortedList(key=lambda x: -x[0])
         for score in scores:
             first_index, second_index = None, None
             file = open(f"{self.general_path}/saved_indexes.dat", 'rb')
