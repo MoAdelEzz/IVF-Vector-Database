@@ -122,7 +122,7 @@ class VecDB:
         scores = []
         query = np.array(query)
         top_60_centroids = SortedList(key=lambda x: -x[0]) 
-        for i, centroid in enumerate(centroids):
+        for i, centroid in enumerate(self.centroids):
             score = np.dot(centroid[1:], query.T) / (np.linalg.norm(centroid[1:]) * np.linalg.norm(query))
             if len(top_60_centroids) < 60:
                 top_60_centroids.add((score, i))
