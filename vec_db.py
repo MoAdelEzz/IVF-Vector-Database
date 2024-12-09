@@ -187,7 +187,9 @@ class VecDB:
                     top_k_results.pop(-1)  # Remove the lowest similarity result if size exceeds top_k
             #del length
             del best_vectors
-        scores = sorted(top_k_results, key=lambda x: x[0], reverse=True)[:top_k]
+        #scores = sorted(top_k_results, key=lambda x: x[0], reverse=True)[:top_k]
+        scores = top_k_results
+        del top_k_results
         return [s[1] for s in scores]
     
     def _cal_score(self, vec1, vec2):
