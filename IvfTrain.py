@@ -38,20 +38,23 @@ class IvfTrain:
         return os.path.getsize(self.generated_database) // (self.dimension * np.dtype(np.float32).itemsize)
 
     def process_clusters_and_centroids(self, centroids, clusters):
-        centroid_records = []
-        for idx, vector in enumerate(centroids):
-            centroid_records.append({"id": idx, "embed": vector})
-    
-        file = open(self.centroids, 'ab')
-        try:
-            for record in centroid_records:
-                record_id, embedding = record["id"], record["embed"]
-                binary_record = struct.pack(f'i{self.dimension}f', record_id, *embedding)
-                file.write(binary_record)
+        # centroid_records = []
+        # for idx, vector in enumerate(centroids):
+        #     centroid_records.append({"id": idx, "embed": vector})
 
-        finally:
-            file.close()
-            del file
+        with open(self.centroids, 'ab') as file:
+            pickle.dump(centroids, file)
+        
+        # file = open(self.centroids, 'ab')
+        # try:
+        #     for record in centroid:
+        #         embedding = record["embed"]
+        #         binary_record = struct.pack(f'i{self.dimension}f', record_id, *embedding)
+        #         file.write(binary_record)
+
+        # finally:
+        #     file.close()
+        #     del file
 
     def file_output(self, clusters, centroids):
         Path(self.clusters).touch()
