@@ -10,7 +10,7 @@ number_of_training_data = int(1e4)
 DIMENSION = 70
 
 class IvfTrain:
-    def __init__(self, generated_database = "saved_db.dat", clusters = "saved_clusters.dat", centroids = "saved_centroids.dat", indexes = "saved_indexes.dat"):
+    def __init__(self, generated_database = "saved_db.dat", clusters = "saved_clusters.dat", centroids = "saved_centroids.pkl", indexes = "saved_indexes.dat"):
         self.generated_database = generated_database
         self.clusters = clusters
         self.centroids = centroids
