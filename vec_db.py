@@ -16,6 +16,8 @@ class VecDB:
         self.general_path = index_file_path
         self.size = 2
         self.db_size = db_size
+        self.centroids = []
+        self.load_centroids()
         # print(index_file_path[0])
         # print(index_file_path[1])
         # print(index_file_path[2])
@@ -89,18 +91,8 @@ class VecDB:
             file.close()
             del file
         return ranged_clusters
-    
-    def divide_into_batches(self, arr, batch_size):
-        length = len(arr)
-        return [arr[i:i + batch_size] for i in range(0, length, batch_size)]
-    
-    def ceil(self, x):
-        integer_part = x - (x % 1)
-        return integer_part + (1 if x % 1 > 0 else 0)
-        
-    def retrieve(self, query: Annotated[np.ndarray, (1, DIMENSION)], top_k = 5):
-        scores = []
-        
+
+    def load_centroids(self):
         centroids = []
         file = open(f"{self.general_path}/saved_centroids.dat", 'rb')
         try:
@@ -115,7 +107,19 @@ class VecDB:
         finally:
             file.close()
             del file
-        centroids = np.array(centroids)
+        self.centroids = np.array(centroids)
+        del centroids
+    
+    def divide_into_batches(self, arr, batch_size):
+        length = len(arr)
+        return [arr[i:i + batch_size] for i in range(0, length, batch_size)]
+    
+    def ceil(self, x):
+        integer_part = x - (x % 1)
+        return integer_part + (1 if x % 1 > 0 else 0)
+        
+    def retrieve(self, query: Annotated[np.ndarray, (1, DIMENSION)], top_k = 5):
+        scores = []
         query = np.array(query)
         top_60_centroids = SortedList(key=lambda x: -x[0]) 
         for i, centroid in enumerate(centroids):
