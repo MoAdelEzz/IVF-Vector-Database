@@ -1,6 +1,7 @@
 from typing import Dict, List, Annotated
 import numpy as np
 import os
+import pickle
 import struct
 from IvfTrain import IvfTrain
 from sortedcontainers import SortedList
@@ -94,19 +95,19 @@ class VecDB:
 
     def load_centroids(self):
         centroids = []
-        file = open(f"{self.general_path}/saved_centroids.dat", 'rb')
+        #file = open(f"{self.general_path}/saved_centroids.dat", 'rb')
         try:
-            row_size = ELEMENT_SIZE * (DIMENSION + 1)
-            data = file.read()
-            length = len(data)
-            for offset in range(0, length, row_size):
-                if len(data[offset:offset + row_size]) < row_size:
-                    break
-                unpacked_data = struct.unpack(f'i{DIMENSION}f', data[offset:offset + row_size])
-                centroids.append(unpacked_data)
-        finally:
-            file.close()
-            del file
+            with open(f"{self.general_path}/saved_centroids.pkl", 'rb') as file:
+                #row_size = ELEMENT_SIZE * (DIMENSION + 1)
+                centroids = pickle.load(file)
+                # length = len(data)
+                # for offset in range(0, length, row_size):
+                #     if len(data[offset:offset + row_size]) < row_size:
+                #         break
+                #     unpacked_data = struct.unpack(f'i{DIMENSION}f', data[offset:offset + row_size])
+                #     centroids.append(unpacked_data)
+                file.close()
+                del file
         self.centroids = np.array(centroids)
         del centroids
     
