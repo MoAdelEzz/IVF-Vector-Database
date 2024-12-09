@@ -17,8 +17,6 @@ class VecDB:
         self.general_path = index_file_path
         self.size = 2
         self.db_size = db_size
-        self.centroids = []
-        self.load_centroids()
         # print(index_file_path[0])
         # print(index_file_path[1])
         # print(index_file_path[2])
@@ -108,8 +106,7 @@ class VecDB:
                 #     centroids.append(unpacked_data)
                 file.close()
                 del file
-        self.centroids = np.array(centroids)
-        del centroids
+        return np.array(centroids)
     
     def divide_into_batches(self, arr, batch_size):
         length = len(arr)
@@ -121,6 +118,7 @@ class VecDB:
         
     def retrieve(self, query: Annotated[np.ndarray, (1, DIMENSION)], top_k = 5):
         scores = []
+        centroids = self.load_centroids()
         query = np.array(query)
         top_60_centroids = SortedList(key=lambda x: -x[0]) 
         for i, centroid in enumerate(self.centroids):
