@@ -69,6 +69,24 @@ class VecDB:
         num_records = self._get_num_records()
         vectors = np.memmap(self.db_path, dtype=np.float32, mode='r', shape=(num_records, DIMENSION))
         return np.array(vectors[:,1:])
+
+        def get_multiple_rows(self, ranged_clusters_ids):
+        ranged_clusters = []
+        # print(ranged_clusters_ids)
+        with open(self.db_path, 'rb') as file:
+            for id in ranged_clusters_ids:
+                #print(id)
+                offset = np.int64(id[1]) * DIMENSION * ELEMENT_SIZE
+                # print(id[1])
+                # print(offset)
+                file.seek(offset)
+                packed_data = file.read(DIMENSION * ELEMENT_SIZE)
+                unpacked_data = struct.unpack(f'{DIMENSION}f', packed_data)
+                del packed_data
+                ranged_clusters.append([unpacked_data, id[1]])
+            file.close()
+            del file
+        return ranged_clusters
     
     def retrieve(self, query: Annotated[np.ndarray, (1, DIMENSION)], top_k = 5):
         scores = []
@@ -132,8 +150,7 @@ class VecDB:
                 del file
                 
             
-            ranged_clusters = [(self.get_one_row(id[1]),id[1]) for id in ranged_clusters_ids]
-            
+            ranged_clusters = self.get_multiple_rows(ranged_clusters_ids)
             cosine_similarities = []
             for row in ranged_clusters:
                 cosine_similarity = self._cal_score(query, row[0])
