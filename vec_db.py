@@ -94,18 +94,17 @@ class VecDB:
     def load_centroids(self):
         centroids = []
         #file = open(f"{self.general_path}/saved_centroids.dat", 'rb')
-        try:
-            with open(f"{self.general_path}/saved_centroids.pkl", 'rb') as file:
-                #row_size = ELEMENT_SIZE * (DIMENSION + 1)
-                centroids = pickle.load(file)
-                # length = len(data)
-                # for offset in range(0, length, row_size):
-                #     if len(data[offset:offset + row_size]) < row_size:
-                #         break
-                #     unpacked_data = struct.unpack(f'i{DIMENSION}f', data[offset:offset + row_size])
-                #     centroids.append(unpacked_data)
-                file.close()
-                del file
+        with open(f"{self.general_path}/saved_centroids.pkl", 'rb') as file:
+            #row_size = ELEMENT_SIZE * (DIMENSION + 1)
+            centroids = pickle.load(file)
+            # length = len(data)
+            # for offset in range(0, length, row_size):
+            #     if len(data[offset:offset + row_size]) < row_size:
+            #         break
+            #     unpacked_data = struct.unpack(f'i{DIMENSION}f', data[offset:offset + row_size])
+            #     centroids.append(unpacked_data)
+            file.close()
+            del file
         return np.array(centroids)
     
     def divide_into_batches(self, arr, batch_size):
