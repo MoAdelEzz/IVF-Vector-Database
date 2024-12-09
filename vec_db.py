@@ -173,9 +173,19 @@ class VecDB:
             for row in ranged_clusters:
                 cosine_similarity = self._cal_score(query, row[0])
                 best_vectors.add((cosine_similarity, row[1]))
-            length = len(ranged_clusters_ids)
-            top_k_results.extend(best_vectors[:min(top_k, length)])
-            del length
+                
+                # Ensure that best_vectors only contains the top k elements.
+                if len(best_vectors) > top_k:
+                    best_vectors.pop(-1)  # Remove the lowest cosine similarity if size exceeds top_k
+            
+            # Add the best results from best_vectors to top_k_results.
+            for similarity, data in best_vectors:
+                top_k_results.add((similarity, data))
+                
+                # Ensure that top_k_results only holds the top k elements.
+                if len(top_k_results) > top_k:
+                    top_k_results.pop(-1)  # Remove the lowest similarity result if size exceeds top_k
+            #del length
             del best_vectors
         scores = sorted(top_k_results, key=lambda x: x[0], reverse=True)[:top_k]
         return [s[1] for s in scores]
