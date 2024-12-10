@@ -61,14 +61,14 @@ class IvfTrain:
         Path(self.clusters).touch()
         Path(self.centroids).touch()
         Path(self.indexes).touch()
-        for idx, vector in enumerate(clusters):
+        for cluster_number, vector in enumerate(clusters):
             file = open(self.clusters, 'ab')
             start_offset, end_offset = None, None
             try:
                 start_offset = file.tell()
                 
-                for row in vector:
-                    binary_data = struct.pack('ii', idx, row)
+                for row_number in vector:
+                    binary_data = struct.pack('ii', cluster_number, row_number)
                     file.write(binary_data)
                 end_offset = file.tell()
             finally:
