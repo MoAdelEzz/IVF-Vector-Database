@@ -76,7 +76,7 @@ class IvfTrain:
                 del file
             file = open(self.indexes, 'ab')
             try:
-                binary_data = struct.pack('iii', idx, start_offset, end_offset)
+                binary_data = struct.pack('iii', cluster_number, start_offset, end_offset)
                 file.write(binary_data)
             finally:
                 file.close()
