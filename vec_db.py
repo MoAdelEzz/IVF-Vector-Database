@@ -93,16 +93,8 @@ class VecDB:
 
     def load_centroids(self):
         centroids = []
-        #file = open(f"{self.general_path}/saved_centroids.dat", 'rb')
         with open(f"{self.general_path}/saved_centroids.pkl", 'rb') as file:
-            #row_size = ELEMENT_SIZE * (DIMENSION + 1)
             centroids = pickle.load(file)
-            # length = len(data)
-            # for offset in range(0, length, row_size):
-            #     if len(data[offset:offset + row_size]) < row_size:
-            #         break
-            #     unpacked_data = struct.unpack(f'i{DIMENSION}f', data[offset:offset + row_size])
-            #     centroids.append(unpacked_data)
             file.close()
             del file
         return np.array(centroids)
@@ -131,7 +123,6 @@ class VecDB:
         best_centroids = [item[1] for item in top_60_centroids]
         
         del top_60_centroids
-        #del sorted_indices
         
         if self._get_num_records() == 20000000:
             #print(top_k)
@@ -144,11 +135,11 @@ class VecDB:
             scores = best_centroids[:60]
         del best_centroids
         top_k_results = SortedList(key=lambda x: -x[0])
-        for score in scores:
+        for cluster_id in scores:
             first_index, second_index = None, None
             file = open(f"{self.general_path}/saved_indexes.dat", 'rb')
             try:
-                position = 3 * score * ELEMENT_SIZE
+                position = 3 * cluster_id * ELEMENT_SIZE
                 file.seek(int(position))
                 packed_data = file.read(3 * ELEMENT_SIZE)
 
@@ -175,21 +166,8 @@ class VecDB:
             for row in ranged_clusters:
                 cosine_similarity = self._cal_score(query, row[0])
                 top_k_results.add((cosine_similarity, row[1]))
-                
-                # Ensure that best_vectors only contains the top k elements.
                 if len(top_k_results) > top_k:
-                    top_k_results.pop(-1)  # Remove the lowest cosine similarity if size exceeds top_k
-            
-            # Add the best results from best_vectors to top_k_results.
-            # for similarity, data in best_vectors:
-            #     top_k_results.add((similarity, data))
-                
-            #     # Ensure that top_k_results only holds the top k elements.
-            #     if len(top_k_results) > top_k:
-            #         top_k_results.pop(-1)  # Remove the lowest similarity result if size exceeds top_k
-            #del length
-            # del best_vectors
-        #scores = sorted(top_k_results, key=lambda x: x[0], reverse=True)[:top_k]
+                    top_k_results.pop(-1)
         scores = top_k_results
         del top_k_results
         return [s[1] for s in scores]
