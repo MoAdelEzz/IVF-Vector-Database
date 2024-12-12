@@ -9,7 +9,7 @@ from sortedcontainers import SortedList
 
 DB_SEED_NUMBER = 42
 ELEMENT_SIZE = np.dtype(np.float32).itemsize
-DIMENSION = 70
+DIMENSION = 100
 
 class VecDB:
     def __init__(self, database_file_path = "saved_db.dat", index_file_path = "index_path", new_db = True, db_size = None) -> None:
@@ -44,7 +44,7 @@ class VecDB:
     def _get_num_records(self) -> int:
         return os.path.getsize(self.db_path) // (DIMENSION * ELEMENT_SIZE)
 
-    def insert_records(self, rows: Annotated[np.ndarray, (int, 70)]):
+    def insert_records(self, rows: Annotated[np.ndarray, (int, 100)]):
         num_old_records = self._get_num_records()
         num_new_records = len(rows)
         full_shape = (num_old_records + num_new_records, DIMENSION)
@@ -111,18 +111,18 @@ class VecDB:
         scores = []
         centroids = self.load_centroids()
         query = np.array(query)
-        top_70_centroids = SortedList(key=lambda x: -x[0]) 
+        top_100_centroids = SortedList(key=lambda x: -x[0]) 
         for i, centroid in enumerate(centroids):
             score = np.dot(centroid, query.T) / (np.linalg.norm(centroid) * np.linalg.norm(query))
-            if len(top_70_centroids) < 70:
-                top_70_centroids.add((score, i))
+            if len(top_100_centroids) < 100:
+                top_100_centroids.add((score, i))
             else:
-                if score > -top_70_centroids[-1][0]:
-                    top_70_centroids.add((score, i))
-                    top_70_centroids.pop() 
-        best_centroids = [item[1] for item in top_70_centroids]
+                if score > -top_100_centroids[-1][0]:
+                    top_100_centroids.add((score, i))
+                    top_100_centroids.pop() 
+        best_centroids = [item[1] for item in top_100_centroids]
         
-        del top_70_centroids
+        del top_100_centroids
         
         if self._get_num_records() == 20000000:
             #print(top_k)
@@ -132,7 +132,7 @@ class VecDB:
         elif self._get_num_records() == 10000000:
             scores = best_centroids[:50]
         else:
-            scores = best_centroids[:70]
+            scores = best_centroids[:100]
         del best_centroids
         top_k_results = SortedList(key=lambda x: -x[0])
         for cluster_id in scores:
