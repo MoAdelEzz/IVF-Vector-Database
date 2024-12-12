@@ -38,24 +38,9 @@ class IvfTrain:
     def _get_num_records(self) -> int:
         return os.path.getsize(self.generated_database) // (self.dimension * np.dtype(np.float32).itemsize)
 
-    def process_clusters_and_centroids(self, centroids, clusters):
-        # centroid_records = []
-        # for idx, vector in enumerate(centroids):
-        #     centroid_records.append({"id": idx, "embed": vector})
-
+    def process_clusters_and_centroids(self, centroids):
         with open(self.centroids, 'ab') as file:
             pickle.dump(centroids, file)
-        
-        # file = open(self.centroids, 'ab')
-        # try:
-        #     for record in centroid:
-        #         embedding = record["embed"]
-        #         binary_record = struct.pack(f'i{self.dimension}f', record_id, *embedding)
-        #         file.write(binary_record)
-
-        # finally:
-        #     file.close()
-        #     del file
 
     def file_output(self, clusters, centroids):
         Path(self.clusters).touch()
@@ -66,7 +51,6 @@ class IvfTrain:
             start_offset, end_offset = None, None
             try:
                 start_offset = file.tell()
-                
                 for row_number in vector:
                     binary_data = struct.pack('ii', cluster_number, row_number)
                     file.write(binary_data)
@@ -81,15 +65,11 @@ class IvfTrain:
             finally:
                 file.close()
                 del file
-        self.process_clusters_and_centroids(centroids, clusters)
-        
-        
-            
+        self.process_clusters_and_centroids(centroids)
 
     def build_index(self):
         start_time = time.time()
         n_clusters = 10000
-
         mbk = MiniBatchKMeans(n_clusters=n_clusters, batch_size=10000)
         vectors = self.get_all_rows()
         mbk.fit(vectors)
