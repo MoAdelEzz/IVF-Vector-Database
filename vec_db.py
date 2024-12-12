@@ -111,28 +111,28 @@ class VecDB:
         scores = []
         centroids = self.load_centroids()
         query = np.array(query)
-        top_100_centroids = SortedList(key=lambda x: -x[0]) 
+        top_70_centroids = SortedList(key=lambda x: -x[0]) 
         for i, centroid in enumerate(centroids):
             score = np.dot(centroid, query.T) / (np.linalg.norm(centroid) * np.linalg.norm(query))
-            if len(top_100_centroids) < 100:
-                top_100_centroids.add((score, i))
+            if len(top_70_centroids) < 100:
+                top_70_centroids.add((score, i))
             else:
-                if score > -top_100_centroids[-1][0]:
-                    top_100_centroids.add((score, i))
-                    top_100_centroids.pop() 
-        best_centroids = [item[1] for item in top_100_centroids]
+                if score > -top_70_centroids[-1][0]:
+                    top_70_centroids.add((score, i))
+                    top_70_centroids.pop() 
+        best_centroids = [item[1] for item in top_70_centroids]
         
-        del top_100_centroids
+        del top_70_centroids
         
         if self._get_num_records() == 20000000:
             #print(top_k)
-            scores = best_centroids[:3]
+            scores = best_centroids[:5]
         elif self._get_num_records() == 15000000:
             scores = best_centroids[:30]
         elif self._get_num_records() == 10000000:
             scores = best_centroids[:50]
         else:
-            scores = best_centroids[:100]
+            scores = best_centroids[:70]
         del best_centroids
         top_k_results = SortedList(key=lambda x: -x[0])
         for cluster_id in scores:
